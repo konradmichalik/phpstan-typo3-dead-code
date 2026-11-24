@@ -50,6 +50,29 @@ parameters:
 
 Add `ext_localconf.php` and `Configuration/` to `paths`. Calls from there only count when they are analysed.
 
+### PHPStan Started from a Subdirectory
+
+If PHPStan lives in its own project, for example `Tests/CGL`, two things matter:
+
+```yaml
+# Tests/CGL/phpstan.neon
+
+parameters:
+  paths:
+    - ../../Classes
+    - ../../Configuration
+    - ../../ext_localconf.php
+```
+
+```bash
+vendor/bin/phpstan analyse --autoload-file=../../vendor/autoload.php
+```
+
+- The provider finds the configuration through the analysed `Configuration` path. Without such a path it falls back to `Configuration/` in the working directory, which is the wrong place here, and every route target and callback is reported.
+- `--autoload-file` makes the detector recognise overrides of the extension's own dependencies. In a trial `bootstrapFiles` did not help, the command line option did.
+
+With both in place the result matched a run from the project root on four extensions.
+
 ## 🧰 Entry Points
 
 | Source | Marked as used |
@@ -84,13 +107,13 @@ public function configByContext(): void {}
 ```yaml
 parameters:
   typo3DeadCode:
-    configurationDirectory: %currentWorkingDirectory%/Configuration
+    configurationDirectory: %currentWorkingDirectory%/../../Configuration
     markConstructors: true
 ```
 
 | Option | Default | Effect |
 |--------|---------|--------|
-| `configurationDirectory` | `%currentWorkingDirectory%/Configuration` | Directory scanned for PHP and TypoScript files |
+| `configurationDirectory` | none | Directory scanned for PHP and TypoScript files. Without it, the analysed path named `Configuration` is used, or `Configuration/` in the working directory if there is none |
 | `markConstructors` | `true` | Treats every constructor as used. Set `false` to let the detector report unused constructors, which is often wrong without a container that creates every class |
 
 ## 🧑‍💻 Development
