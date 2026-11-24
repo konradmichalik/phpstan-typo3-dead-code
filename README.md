@@ -13,7 +13,7 @@ TYPO3 entry points for [`shipmonk/dead-code-detector`](https://github.com/shipmo
 
 ### Requirements
 
-- PHP 8.2 to 8.5
+- PHP 8.2 to 8.6
 - PHPStan 2.1.41 or newer
 - [`shipmonk/dead-code-detector`](https://github.com/shipmonk-rnd/dead-code-detector) 1.4, installed as a dependency
 
