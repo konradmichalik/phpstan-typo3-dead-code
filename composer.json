@@ -1,0 +1,64 @@
+{
+	"name": "konradmichalik/phpstan-typo3-dead-code",
+	"description": "TYPO3 entry points for shipmonk/dead-code-detector: DI constructors, route targets and TypoScript userFunc",
+	"license": "GPL-3.0-or-later",
+	"type": "phpstan-extension",
+	"authors": [
+		{
+			"name": "Konrad Michalik",
+			"email": "hej@konradmichalik.dev",
+			"role": "Maintainer"
+		}
+	],
+	"require": {
+		"php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0",
+		"phpstan/phpstan": "^2.1.41",
+		"shipmonk/dead-code-detector": "^1.4"
+	},
+	"require-dev": {
+		"armin/editorconfig-cli": "^2.0",
+		"ergebnis/composer-normalize": "^2.44",
+		"phpunit/phpunit": "^11.5 || ^12.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"KonradMichalik\\PhpStanTypo3DeadCode\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"KonradMichalik\\PhpStanTypo3DeadCode\\Tests\\": "tests/"
+		},
+		"classmap": [
+			"tests/Fixtures"
+		]
+	},
+	"config": {
+		"allow-plugins": {
+			"ergebnis/composer-normalize": true
+		},
+		"sort-packages": true
+	},
+	"extra": {
+		"phpstan": {
+			"includes": [
+				"rules.neon"
+			]
+		}
+	},
+	"scripts": {
+		"fix": [
+			"@fix:composer",
+			"@fix:editorconfig"
+		],
+		"fix:composer": "@composer normalize",
+		"fix:editorconfig": "@lint:editorconfig --fix",
+		"lint": [
+			"@lint:composer",
+			"@lint:editorconfig"
+		],
+		"lint:composer": "@fix:composer --dry-run",
+		"lint:editorconfig": "ec --git-only",
+		"test": "phpunit"
+	}
+}

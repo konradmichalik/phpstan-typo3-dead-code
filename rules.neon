@@ -1,0 +1,19 @@
+parametersSchema:
+	typo3DeadCode: structure([
+		configurationDirectory: string()
+		markConstructors: bool()
+	])
+
+parameters:
+	typo3DeadCode:
+		configurationDirectory: %currentWorkingDirectory%/Configuration
+		markConstructors: true
+
+services:
+	-
+		class: KonradMichalik\PhpStanTypo3DeadCode\Typo3EntrypointProvider
+		arguments:
+			configurationDirectory: %typo3DeadCode.configurationDirectory%
+			markConstructors: %typo3DeadCode.markConstructors%
+		tags:
+			- shipmonk.deadCode.memberUsageProvider

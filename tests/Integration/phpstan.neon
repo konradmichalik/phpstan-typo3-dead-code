@@ -1,0 +1,10 @@
+includes:
+	- %rootDir%/../../shipmonk/dead-code-detector/rules.neon
+	- ../../rules.neon
+
+parameters:
+	level: 0
+	paths:
+		- ../Fixtures/Project/Classes
+	typo3DeadCode:
+		configurationDirectory: %currentWorkingDirectory%/tests/Fixtures/Project/Configuration

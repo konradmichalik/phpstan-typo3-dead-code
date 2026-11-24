@@ -1,0 +1,4 @@
+lib.color = USER
+lib.color.userFunc = Fixture\Project\ContextUtility->getColor
+lib.other = USER
+lib.other.userFunc = \Fixture\Project\ContextUtility->leadingBackslash
