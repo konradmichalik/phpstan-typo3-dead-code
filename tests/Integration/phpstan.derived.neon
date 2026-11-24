@@ -1,0 +1,9 @@
+includes:
+	- %rootDir%/../../shipmonk/dead-code-detector/rules.neon
+	- ../../rules.neon
+
+parameters:
+	level: 0
+	paths:
+		- ../Fixtures/Project/Classes
+		- ../Fixtures/Project/Configuration

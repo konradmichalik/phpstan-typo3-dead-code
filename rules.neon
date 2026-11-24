@@ -1,18 +1,20 @@
 parametersSchema:
 	typo3DeadCode: structure([
-		configurationDirectory: string()
+		configurationDirectory: schema(string(), nullable())
 		markConstructors: bool()
 	])
 
 parameters:
 	typo3DeadCode:
-		configurationDirectory: %currentWorkingDirectory%/Configuration
+		configurationDirectory: null
 		markConstructors: true
 
 services:
 	-
 		class: KonradMichalik\PhpStanTypo3DeadCode\Typo3EntrypointProvider
 		arguments:
+			analysedPaths: %analysedPaths%
+			currentWorkingDirectory: %currentWorkingDirectory%
 			configurationDirectory: %typo3DeadCode.configurationDirectory%
 			markConstructors: %typo3DeadCode.markConstructors%
 		tags:

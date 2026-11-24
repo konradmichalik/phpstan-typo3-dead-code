@@ -20,9 +20,14 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
     /** @var array<string, true>|null "DeclaringClass::method" */
     private ?array $entrypoints = null;
 
+    /**
+     * @param list<string> $analysedPaths
+     */
     public function __construct(
         private readonly ReflectionProvider $reflectionProvider,
-        private readonly string $configurationDirectory,
+        private readonly array $analysedPaths,
+        private readonly string $currentWorkingDirectory,
+        private readonly ?string $configurationDirectory,
         private readonly bool $markConstructors,
     ) {}
 
@@ -81,21 +86,42 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
      */
     private function files(): array
     {
-        if (!is_dir($this->configurationDirectory)) {
-            return [];
-        }
-
         $files = [];
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($this->configurationDirectory, FilesystemIterator::SKIP_DOTS),
-        );
-        foreach ($iterator as $file) {
-            $path = $file->getPathname();
-            if (str_ends_with($path, '.php') || str_ends_with($path, '.typoscript')) {
-                $files[] = $path;
+        foreach ($this->configurationDirectories() as $directory) {
+            if (!is_dir($directory)) {
+                continue;
+            }
+
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
+            );
+            foreach ($iterator as $file) {
+                $path = $file->getPathname();
+                if (str_ends_with($path, '.php') || str_ends_with($path, '.typoscript')) {
+                    $files[] = $path;
+                }
             }
         }
 
         return $files;
+    }
+
+    // PHPStan often runs from a subdirectory such as Tests/CGL, so the working directory says little.
+    // The analysed Configuration directory is what the project already points PHPStan at.
+    /**
+     * @return list<string>
+     */
+    private function configurationDirectories(): array
+    {
+        if (null !== $this->configurationDirectory) {
+            return [$this->configurationDirectory];
+        }
+
+        $analysed = array_values(array_filter(
+            $this->analysedPaths,
+            static fn (string $path): bool => 'Configuration' === basename($path) && is_dir($path),
+        ));
+
+        return [] !== $analysed ? $analysed : [$this->currentWorkingDirectory . '/Configuration'];
     }
 }
