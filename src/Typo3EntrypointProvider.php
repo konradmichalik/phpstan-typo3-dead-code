@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace KonradMichalik\PhpStanTypo3DeadCode;
 
 use FilesystemIterator;
+use PHPStan\Reflection\ReflectionProvider;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionMethod;
@@ -16,10 +17,11 @@ use ShipMonk\PHPStan\DeadCode\Provider\VirtualUsageData;
  */
 final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
 {
-    /** @var array<string, list<string>>|null */
+    /** @var array<string, true>|null "DeclaringClass::method" */
     private ?array $entrypoints = null;
 
     public function __construct(
+        private readonly ReflectionProvider $reflectionProvider,
         private readonly string $configurationDirectory,
         private readonly bool $markConstructors,
     ) {}
@@ -30,16 +32,15 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
             return VirtualUsageData::withNote('Instantiated by the TYPO3 dependency injection container');
         }
 
-        $class = $method->getDeclaringClass()->getName();
-        if (in_array($method->getName(), $this->entrypoints()[$class] ?? [], true)) {
-            return VirtualUsageData::withNote('Called from TYPO3 configuration (route target or TypoScript userFunc)');
+        if (isset($this->entrypoints()[$method->getDeclaringClass()->getName() . '::' . $method->getName()])) {
+            return VirtualUsageData::withNote('Called from TYPO3 configuration (route target, TCA callback or TypoScript userFunc)');
         }
 
         return null;
     }
 
     /**
-     * @return array<string, list<string>>
+     * @return array<string, true>
      */
     private function entrypoints(): array
     {
@@ -47,21 +48,32 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
             return $this->entrypoints;
         }
 
-        $routes = new RouteTargetReader();
+        $php = new PhpConfigurationReader();
         $typoScript = new TypoScriptUserFuncReader();
 
         $entrypoints = [];
         foreach ($this->files() as $file) {
-            $found = match (true) {
-                str_ends_with($file, '.typoscript') => $typoScript->read($file),
-                default => $routes->read($file),
-            };
-            foreach ($found as $class => $methods) {
-                $entrypoints[$class] = [...($entrypoints[$class] ?? []), ...$methods];
+            $targets = str_ends_with($file, '.typoscript') ? $typoScript->read($file) : $php->read($file);
+            foreach ($targets as [$class, $method]) {
+                $entrypoints[$this->declaringClass($class, $method) . '::' . $method] = true;
             }
         }
 
         return $this->entrypoints = $entrypoints;
+    }
+
+    // A route may name a child class while the method lives in its parent or a trait.
+    private function declaringClass(string $class, string $method): string
+    {
+        if (!$this->reflectionProvider->hasClass($class)) {
+            return $class;
+        }
+
+        $reflection = $this->reflectionProvider->getClass($class);
+
+        return $reflection->hasNativeMethod($method)
+            ? $reflection->getNativeMethod($method)->getDeclaringClass()->getName()
+            : $class;
     }
 
     /**
@@ -79,8 +91,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
         );
         foreach ($iterator as $file) {
             $path = $file->getPathname();
-            $isRoutes = 1 === preg_match('#/Backend/\w*Routes\.php$#', $path);
-            if ($isRoutes || str_ends_with($path, '.typoscript')) {
+            if (str_ends_with($path, '.php') || str_ends_with($path, '.typoscript')) {
                 $files[] = $path;
             }
         }

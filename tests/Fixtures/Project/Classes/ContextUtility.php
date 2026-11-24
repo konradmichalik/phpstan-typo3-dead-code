@@ -11,6 +11,12 @@ final class ContextUtility
         return 'red';
     }
 
+    public function commentedOut(): void {}
+
+    public function itemsProc(): void {}
+
+    public function byTcaString(): void {}
+
     public function deadUtility(): void {}
 
     /**

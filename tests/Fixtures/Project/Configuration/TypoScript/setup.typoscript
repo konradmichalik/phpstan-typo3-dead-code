@@ -2,3 +2,8 @@ lib.color = USER
 lib.color.userFunc = Fixture\Project\ContextUtility->getColor
 lib.other = USER
 lib.other.userFunc = \Fixture\Project\ContextUtility->leadingBackslash
+# lib.old.userFunc = Fixture\Project\ContextUtility->commentedOut
+// lib.older.userFunc = Fixture\Project\ContextUtility->commentedOut
+/*
+lib.block.userFunc = Fixture\Project\ContextUtility->commentedOut
+*/

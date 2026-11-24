@@ -12,6 +12,7 @@ final class DeadCodeDetectorTest extends TestCase
     {
         self::assertSame([
             'Unused Fixture\Other\ExampleController::list',
+            'Unused Fixture\Project\ContextUtility::commentedOut',
             'Unused Fixture\Project\ContextUtility::deadUtility',
             'Unused Fixture\Project\ExampleController::neverCalled',
         ], $this->analyse('phpstan.neon'));

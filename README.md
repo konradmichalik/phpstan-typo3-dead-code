@@ -54,8 +54,8 @@ Add `ext_localconf.php` and `Configuration/` to `paths`. Calls from there only c
 
 | Source | Marked as used |
 |--------|----------------|
-| `Configuration/Backend/*Routes.php` | `Foo::class . '::bar'`, `'Vendor\Foo::bar'` and an invokable `'target' => Foo::class` (`__invoke`) |
-| `Configuration/**/*.typoscript` | `userFunc = Vendor\Foo->bar` |
+| `Configuration/**/*.php` | Route targets `Foo::class . '::bar'` and `'Vendor\Foo::bar'`, an invokable `'target' => Foo::class` (`__invoke`), and TCA callbacks such as `'itemsProcFunc' => Foo::class . '->bar'` or `'userFunc' => 'Vendor\Foo->bar'` |
+| `Configuration/**/*.typoscript` | `userFunc = Vendor\Foo->bar`, comment lines excluded |
 | Any class | `__construct`, because the container instantiates it |
 
 ```php
@@ -63,11 +63,12 @@ Add `ext_localconf.php` and `Configuration/` to `paths`. Calls from there only c
 'target' => FacetsModalController::class . '::configuration', // FacetsModalController::configuration counts as used
 ```
 
-Class names are resolved to fully qualified names, so two classes with the same short name do not cover each other.
+Class names are resolved to fully qualified names, so two classes with the same short name do not cover each other. A route that names a child class also covers a method declared in its parent class or in a trait. A PHP file that cannot be parsed is skipped.
 
 ### Not Covered
 
-- Fluid templates, `Services.yaml` tags and hook registrations in `ext_localconf.php`. Methods that are only reachable from there are still reported.
+- Fluid templates, `Services.yaml` tags, `USER:` conditions and hook registrations in `ext_localconf.php`. Methods that are only reachable from there are still reported.
+- Properties of value objects that Fluid templates or JSON serialisation read. Set `shipmonkDeadCode.detect.deadProperties.neverRead` to `false` if that produces noise.
 - Overrides of TYPO3 base classes and interfaces, such as ViewHelpers, toolbar items and event listeners. The detector's own vendor provider already handles them.
 - Public API for other packages. Mark it with `@api` in the PHPDoc, the detector honours that out of the box:
 
@@ -89,7 +90,7 @@ parameters:
 
 | Option | Default | Effect |
 |--------|---------|--------|
-| `configurationDirectory` | `%currentWorkingDirectory%/Configuration` | Directory scanned for route files and TypoScript |
+| `configurationDirectory` | `%currentWorkingDirectory%/Configuration` | Directory scanned for PHP and TypoScript files |
 | `markConstructors` | `true` | Treats every constructor as used. Set `false` to let the detector report unused constructors, which is often wrong without a container that creates every class |
 
 ## 🧑‍💻 Development

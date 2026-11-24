@@ -9,10 +9,13 @@ use PHPUnit\Framework\TestCase;
 
 final class TypoScriptUserFuncReaderTest extends TestCase
 {
-    public function testReadsUserFuncWithAndWithoutLeadingBackslash(): void
+    public function testReadsUserFuncWithAndWithoutLeadingBackslashAndIgnoresComments(): void
     {
         $functions = (new TypoScriptUserFuncReader())->read(__DIR__ . '/../Fixtures/Project/Configuration/TypoScript/setup.typoscript');
 
-        self::assertSame(['Fixture\Project\ContextUtility' => ['getColor', 'leadingBackslash']], $functions);
+        self::assertSame([
+            ['Fixture\Project\ContextUtility', 'getColor'],
+            ['Fixture\Project\ContextUtility', 'leadingBackslash'],
+        ], $functions);
     }
 }
