@@ -1,0 +1,7 @@
+includes:
+	- ../../../vendor/shipmonk/dead-code-detector/rules.neon
+	- ../../../rules.neon
+
+parameters:
+	typo3DeadCode:
+		configurationDirectory: ../../Fixtures/Project/Configuration

@@ -11,7 +11,7 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace KonradMichalik\PhpStanTypo3DeadCode\Tests\Unit;
+namespace KonradMichalik\PhpStanTypo3DeadCode\Tests;
 
 use KonradMichalik\PhpStanTypo3DeadCode\PhpConfigurationReader;
 use PHPUnit\Framework\TestCase;

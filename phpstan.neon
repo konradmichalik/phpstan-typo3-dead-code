@@ -5,6 +5,5 @@ parameters:
 	level: max
 	paths:
 		- src
-		- tests/Integration
-		- tests/Unit
+		- tests/src
 	tmpDir: .build/phpstan.cache

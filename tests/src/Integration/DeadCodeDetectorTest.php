@@ -36,7 +36,7 @@ final class DeadCodeDetectorTest extends TestCase
 
     public function testFallsBackToTheConfigurationDirectoryOfTheWorkingDirectory(): void
     {
-        self::assertSame(Expectations::DEAD, $this->analyse('phpstan.fallback.neon', dirname(__DIR__).'/Fixtures/Project'));
+        self::assertSame(Expectations::DEAD, $this->analyse('phpstan.fallback.neon', dirname(__DIR__, 2).'/Fixtures/Project'));
     }
 
     /**
@@ -44,7 +44,7 @@ final class DeadCodeDetectorTest extends TestCase
      */
     private function analyse(string $configuration, ?string $workingDirectory = null): array
     {
-        $root = dirname(__DIR__, 2);
+        $root = dirname(__DIR__, 3);
         $command = sprintf(
             'cd %s && %s %s analyse -c %s --autoload-file=%s --no-progress --error-format=raw --memory-limit=1G 2>&1',
             escapeshellarg($workingDirectory ?? $root),

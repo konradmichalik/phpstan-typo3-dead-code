@@ -19,8 +19,7 @@ use Rector\ValueObject\PhpVersion;
 return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/src',
-        __DIR__.'/tests/Integration',
-        __DIR__.'/tests/Unit',
+        __DIR__.'/tests/src',
     ])
     ->withPhpVersion(PhpVersion::PHP_82)
     ->withPhpSets(php82: true)

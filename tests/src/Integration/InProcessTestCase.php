@@ -35,12 +35,12 @@ abstract class InProcessTestCase extends RuleTestCase
      */
     protected function analyseFixtures(): array
     {
-        foreach (glob(dirname(__DIR__).'/Stubs/*.php') ?: [] as $stub) {
+        foreach (glob(dirname(__DIR__, 2).'/Stubs/*.php') ?: [] as $stub) {
             require_once $stub;
         }
 
         $messages = [];
-        foreach ($this->gatherAnalyserErrors(glob(dirname(__DIR__).'/Fixtures/Project/Classes/*.php') ?: []) as $error) {
+        foreach ($this->gatherAnalyserErrors(glob(dirname(__DIR__, 2).'/Fixtures/Project/Classes/*.php') ?: []) as $error) {
             $messages[] = $error->getMessage();
         }
         sort($messages);
