@@ -18,93 +18,25 @@ use PHPUnit\Framework\TestCase;
 use function dirname;
 use function sprintf;
 
+/**
+ * Runs PHPStan on the command line for what the in-process tests cannot reproduce: locating the configuration
+ * directory from the neon file, analysedPaths or the working directory, and Extbase known only through scanDirectories.
+ */
 final class DeadCodeDetectorTest extends TestCase
 {
-    private const EVENT_API = [
-        'Property Fixture\Project\ExampleEvent::$items is never read',
-        'Property Fixture\Project\ExampleEvent::$items is never written',
-        'Property Fixture\Project\ExampleEvent::$payload is never read',
-        'Unused Fixture\Project\ConcreteNamedEvent::getName',
-        'Unused Fixture\Project\ExampleEvent::getValue',
-        'Unused Fixture\Project\NamedEvent::getName',
-        'Unused Fixture\Project\NullsafeEvent::getValue',
-    ];
-
-    private const FLUID_ACCESS = [
-        'Property Fixture\Project\FluidRecord::$identifier is never read',
-        'Unused Fixture\Project\FluidRecord::getAuthor',
-        'Unused Fixture\Project\FluidRecord::getSubtitle',
-        'Unused Fixture\Project\FluidRecord::getSummary',
-        'Unused Fixture\Project\FluidRecord::getTitle',
-        'Unused Fixture\Project\FluidRecord::hasTags',
-        'Unused Fixture\Project\FluidRecord::isPublished',
-        'Unused Fixture\Project\FluidRecord::isVisible',
-    ];
-
-    private const DEAD = [
-        'Property Fixture\Project\ExampleEvent::$items is never read',
-        'Property Fixture\Project\ExampleEvent::$items is never written',
-        'Property Fixture\Project\ExampleEvent::$payload is never read',
-        'Property Fixture\Project\FluidRecord::$identifier is never read',
-        'Property Fixture\Project\FluidRecord::$tags is never read',
-        'Property Fixture\Project\FluidRecord::$word is never read',
-        'Unused Fixture\Other\ExampleController::list',
-        'Unused Fixture\Project\BlogController::renderTeaser',
-        'Unused Fixture\Project\ConcreteNamedEvent::getName',
-        'Unused Fixture\Project\ContextUtility::commentedOut',
-        'Unused Fixture\Project\ContextUtility::deadUtility',
-        'Unused Fixture\Project\DataHandlerHook::notAHook',
-        'Unused Fixture\Project\ExampleController::neverCalled',
-        'Unused Fixture\Project\ExampleController::notExtbaseAction',
-        'Unused Fixture\Project\ExampleEvent::getValue',
-        'Unused Fixture\Project\ExampleRepository::injectHidden',
-        'Unused Fixture\Project\FluidRecord::getAuthor',
-        'Unused Fixture\Project\FluidRecord::getHeader',
-        'Unused Fixture\Project\FluidRecord::getSecret',
-        'Unused Fixture\Project\FluidRecord::getSubtitle',
-        'Unused Fixture\Project\FluidRecord::getSummary',
-        'Unused Fixture\Project\FluidRecord::getTitle',
-        'Unused Fixture\Project\FluidRecord::hasTags',
-        'Unused Fixture\Project\FluidRecord::isPublished',
-        'Unused Fixture\Project\FluidRecord::isVisible',
-        'Unused Fixture\Project\NamedEvent::getName',
-        'Unused Fixture\Project\NullsafeEvent::getValue',
-        'Unused Fixture\Project\ServiceListener::notListening',
-        'Unused Fixture\Project\UndispatchedEvent::getValue',
-    ];
-
-    public function testOnlyGenuinelyDeadMembersAreReported(): void
+    public function testRelativeConfigurationDirectoryIsResolvedFromTheNeonFile(): void
     {
-        self::assertSame(self::DEAD, $this->analyse('phpstan.neon'));
+        self::assertSame(Expectations::DEAD, $this->analyse('phpstan.explicit.neon', sys_get_temp_dir()));
     }
 
     public function testConfigurationDirectoryIsDerivedFromTheAnalysedPathsWhateverTheWorkingDirectory(): void
     {
-        self::assertSame(self::DEAD, $this->analyse('phpstan.derived.neon', sys_get_temp_dir()));
+        self::assertSame(Expectations::DEAD, $this->analyse('phpstan.derived.neon', sys_get_temp_dir()));
     }
 
     public function testFallsBackToTheConfigurationDirectoryOfTheWorkingDirectory(): void
     {
-        self::assertSame(self::DEAD, $this->analyse('phpstan.fallback.neon', dirname(__DIR__).'/Fixtures/Project'));
-    }
-
-    public function testPublicMembersOfDispatchedEventsAreUsedWhenEnabled(): void
-    {
-        self::assertSame(array_values(array_diff(self::DEAD, self::EVENT_API)), $this->analyse('phpstan.events.neon'));
-    }
-
-    public function testMembersReadInFluidTemplatesAreUsedWhenEnabled(): void
-    {
-        self::assertSame(array_values(array_diff(self::DEAD, self::FLUID_ACCESS)), $this->analyse('phpstan.fluid.neon'));
-    }
-
-    public function testContainerCallsAreReportedWhenConstructorsAreNotMarked(): void
-    {
-        $messages = $this->analyse('phpstan.constructors.neon');
-
-        self::assertContains('Unused Fixture\Project\ExampleController::__construct', $messages);
-        self::assertContains('Unused Fixture\Project\ExampleRepository::injectConnectionPool', $messages);
-        self::assertContains('Unused Fixture\Project\ExampleRepository::initializeObject', $messages);
+        self::assertSame(Expectations::DEAD, $this->analyse('phpstan.fallback.neon', dirname(__DIR__).'/Fixtures/Project'));
     }
 
     /**

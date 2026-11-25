@@ -1,6 +1,8 @@
 includes:
-	- phpstan.neon
+	- inprocess.neon
 
 parameters:
 	typo3DeadCode:
 		markConstructors: false
+		markEventApi: true
+		markFluidAccess: true
