@@ -4,6 +4,8 @@ includes:
 
 parameters:
 	level: 0
+	scanDirectories:
+		- ../Stubs
 	paths:
 		- ../Fixtures/Project/Classes
 	typo3DeadCode:

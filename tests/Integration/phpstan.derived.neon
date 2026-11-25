@@ -4,6 +4,8 @@ includes:
 
 parameters:
 	level: 0
+	scanDirectories:
+		- ../Stubs
 	paths:
 		- ../Fixtures/Project/Classes
 		- ../Fixtures/Project/Configuration

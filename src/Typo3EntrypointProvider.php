@@ -43,9 +43,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
         }
 
         // Extbase resolves the action method from the request, so neither the call nor the action name is in PHP code.
-        if (str_ends_with($method->getName(), 'Action')
-            && is_a($method->getDeclaringClass()->getName(), 'TYPO3\CMS\Extbase\Mvc\Controller\ActionController', true)
-        ) {
+        if (str_ends_with($method->getName(), 'Action') && $this->isExtbaseController($method->getDeclaringClass()->getName())) {
             return VirtualUsageData::withNote('Extbase action, dispatched by the ActionController');
         }
 
@@ -83,6 +81,16 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
     private static function key(string $class, string $method): string
     {
         return strtolower($class . '::' . $method);
+    }
+
+    // Static reflection, because runtime autoloading fails when Extbase is only known through scanDirectories.
+    private function isExtbaseController(string $class): bool
+    {
+        $controller = 'TYPO3\CMS\Extbase\Mvc\Controller\ActionController';
+
+        return $this->reflectionProvider->hasClass($controller)
+            && $this->reflectionProvider->hasClass($class)
+            && $this->reflectionProvider->getClass($class)->isSubclassOfClass($this->reflectionProvider->getClass($controller));
     }
 
     // A route may name a child class while the method lives in its parent or a trait.
