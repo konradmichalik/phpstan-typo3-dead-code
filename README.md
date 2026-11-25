@@ -74,6 +74,14 @@ vendor/bin/phpstan analyse --autoload-file=../../vendor/autoload.php
 
 With both in place the result matched a run from the project root on four extensions.
 
+### Result Cache
+
+PHPStan's result cache does not know that the result depends on configuration, `Services.yaml`, TypoScript and Fluid templates. After a change to one of them alone, the next run can still report the old state. Clear the cache first:
+
+```bash
+vendor/bin/phpstan clear-result-cache
+```
+
 ## 🧰 Entry Points
 
 | Source | Marked as used |
@@ -95,7 +103,7 @@ Class names are resolved to fully qualified names, so two classes with the same 
 
 ### Not Covered
 
-- Fluid templates, `calls` and `configurator` in `Services.yaml`, `Services.php`, `USER:` conditions and hooks other than the DataHandler ones that are registered by class name only. Methods that are only reachable from there are still reported.
+- Fluid templates, unless `markFluidAccess` is on, `calls` and `configurator` in `Services.yaml`, `Services.php`, `USER:` conditions and hooks other than the DataHandler ones that are registered by class name only. Methods that are only reachable from there are still reported.
 - Properties of value objects that Fluid templates or JSON serialisation read. Set `shipmonkDeadCode.detect.deadProperties.neverRead` to `false` if that produces noise.
 - Overrides of TYPO3 base classes and interfaces, such as ViewHelpers, toolbar items and event listeners. The detector's own vendor provider already handles them.
 - Public API for other packages. Mark it with `@api` in the PHPDoc, the detector honours that out of the box:
@@ -115,6 +123,7 @@ parameters:
     configurationDirectory: %currentWorkingDirectory%/../../Configuration
     markConstructors: true
     markEventApi: false
+    markFluidAccess: false
 ```
 
 | Option | Default | Effect |
@@ -122,6 +131,7 @@ parameters:
 | `configurationDirectory` | none | Directory scanned for PHP and TypoScript files. `ext_localconf.php` and `ext_tables.php` next to it are read as well. Without it, the analysed path named `Configuration` is used, or `Configuration/` in the working directory if there is none |
 | `markConstructors` | `true` | Treats every constructor, public `inject*` method and public `initializeObject` as used. Set `false` to let the detector report them, which is often wrong without a container that creates every class |
 | `markEventApi` | `false` | Treats the public methods and properties of an event as used wherever it is passed to `EventDispatcherInterface::dispatch()`, because listeners in other packages read them and write public properties that are not readonly. Dispatched through an interface or base class, the implementations and overrides of its members count too. This also hides getters nobody reads, so it is off by default. Members that only a subclass declares and objects returned by the getters are not covered |
+| `markFluidAccess` | `false` | Reads every `*.html` and `*.txt` under `Resources/Private/` next to the configuration directory and treats a public property `$foo` and public methods `getFoo()`, `isFoo()` and `hasFoo()` as used when a variable path such as `{record.foo}` names `foo`. Quoted strings such as translation keys do not count. The match is by name only, because the template does not say which class `record` is. A generic name such as `value` or `date` therefore also hides that member on unrelated classes, so it is off by default |
 
 ## 🧑‍💻 Development
 

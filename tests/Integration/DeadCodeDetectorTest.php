@@ -18,10 +18,24 @@ final class DeadCodeDetectorTest extends TestCase
         'Unused Fixture\Project\NullsafeEvent::getValue',
     ];
 
+    private const FLUID_ACCESS = [
+        'Property Fixture\Project\FluidRecord::$identifier is never read',
+        'Unused Fixture\Project\FluidRecord::getAuthor',
+        'Unused Fixture\Project\FluidRecord::getSubtitle',
+        'Unused Fixture\Project\FluidRecord::getSummary',
+        'Unused Fixture\Project\FluidRecord::getTitle',
+        'Unused Fixture\Project\FluidRecord::hasTags',
+        'Unused Fixture\Project\FluidRecord::isPublished',
+        'Unused Fixture\Project\FluidRecord::isVisible',
+    ];
+
     private const DEAD = [
         'Property Fixture\Project\ExampleEvent::$items is never read',
         'Property Fixture\Project\ExampleEvent::$items is never written',
         'Property Fixture\Project\ExampleEvent::$payload is never read',
+        'Property Fixture\Project\FluidRecord::$identifier is never read',
+        'Property Fixture\Project\FluidRecord::$tags is never read',
+        'Property Fixture\Project\FluidRecord::$word is never read',
         'Unused Fixture\Other\ExampleController::list',
         'Unused Fixture\Project\BlogController::renderTeaser',
         'Unused Fixture\Project\ConcreteNamedEvent::getName',
@@ -32,6 +46,15 @@ final class DeadCodeDetectorTest extends TestCase
         'Unused Fixture\Project\ExampleController::notExtbaseAction',
         'Unused Fixture\Project\ExampleEvent::getValue',
         'Unused Fixture\Project\ExampleRepository::injectHidden',
+        'Unused Fixture\Project\FluidRecord::getAuthor',
+        'Unused Fixture\Project\FluidRecord::getHeader',
+        'Unused Fixture\Project\FluidRecord::getSecret',
+        'Unused Fixture\Project\FluidRecord::getSubtitle',
+        'Unused Fixture\Project\FluidRecord::getSummary',
+        'Unused Fixture\Project\FluidRecord::getTitle',
+        'Unused Fixture\Project\FluidRecord::hasTags',
+        'Unused Fixture\Project\FluidRecord::isPublished',
+        'Unused Fixture\Project\FluidRecord::isVisible',
         'Unused Fixture\Project\NamedEvent::getName',
         'Unused Fixture\Project\NullsafeEvent::getValue',
         'Unused Fixture\Project\ServiceListener::notListening',
@@ -56,6 +79,11 @@ final class DeadCodeDetectorTest extends TestCase
     public function testPublicMembersOfDispatchedEventsAreUsedWhenEnabled(): void
     {
         self::assertSame(array_values(array_diff(self::DEAD, self::EVENT_API)), $this->analyse('phpstan.events.neon'));
+    }
+
+    public function testMembersReadInFluidTemplatesAreUsedWhenEnabled(): void
+    {
+        self::assertSame(array_values(array_diff(self::DEAD, self::FLUID_ACCESS)), $this->analyse('phpstan.fluid.neon'));
     }
 
     public function testContainerCallsAreReportedWhenConstructorsAreNotMarked(): void

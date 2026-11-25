@@ -1,0 +1,12 @@
+<f:layout name="Default" />
+<f:section name="Main">
+    <h1>{record.title}</h1>
+    <f:if condition="{record.visible}">
+        <p>{record.author.fullName -> f:format.html()}</p>
+    </f:if>
+    <f:for each="{record.tags}" as="tag">{tag}</f:for>
+    <f:link.action action="show" arguments="{id: record.identifier}">Show</f:link.action>
+    <p>{f:if(condition: record.published, then: '{record.subtitle}', else: '-')}</p>
+    <h2>{f:translate(key: 'list.header')}</h2>
+    <p>Plain text such as fixture.word is not a variable.</p>
+</f:section>

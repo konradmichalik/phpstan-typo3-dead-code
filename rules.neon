@@ -3,6 +3,7 @@ parametersSchema:
 		configurationDirectory: schema(string(), nullable())
 		markConstructors: bool()
 		markEventApi: bool()
+		markFluidAccess: bool()
 	])
 
 parameters:
@@ -10,6 +11,7 @@ parameters:
 		configurationDirectory: null
 		markConstructors: true
 		markEventApi: false
+		markFluidAccess: false
 
 services:
 	-
@@ -19,6 +21,7 @@ services:
 			currentWorkingDirectory: %currentWorkingDirectory%
 			configurationDirectory: %typo3DeadCode.configurationDirectory%
 			markConstructors: %typo3DeadCode.markConstructors%
+			markFluidAccess: %typo3DeadCode.markFluidAccess%
 		tags:
 			- shipmonk.deadCode.memberUsageProvider
 	-

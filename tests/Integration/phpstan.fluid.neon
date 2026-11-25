@@ -1,0 +1,6 @@
+includes:
+	- phpstan.neon
+
+parameters:
+	typo3DeadCode:
+		markFluidAccess: true

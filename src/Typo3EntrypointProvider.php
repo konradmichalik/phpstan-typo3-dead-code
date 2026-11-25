@@ -9,6 +9,7 @@ use PHPStan\Reflection\ReflectionProvider;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionMethod;
+use ReflectionProperty;
 use ShipMonk\PHPStan\DeadCode\Provider\ReflectionBasedMemberUsageProvider;
 use ShipMonk\PHPStan\DeadCode\Provider\VirtualUsageData;
 
@@ -20,6 +21,12 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
     /** @var array<string, true>|null "declaringclass::method", lowercase */
     private ?array $entrypoints = null;
 
+    /** @var array<string, true>|null property names read in Fluid templates */
+    private ?array $fluidNames = null;
+
+    /** @var array<string, true>|null the same names lowercase, for getter lookups */
+    private ?array $fluidGetterNames = null;
+
     /**
      * @param list<string> $analysedPaths
      */
@@ -29,6 +36,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
         private readonly string $currentWorkingDirectory,
         private readonly ?string $configurationDirectory,
         private readonly bool $markConstructors,
+        private readonly bool $markFluidAccess,
     ) {}
 
     protected function shouldMarkMethodAsUsed(ReflectionMethod $method): ?VirtualUsageData
@@ -51,7 +59,54 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
             return VirtualUsageData::withNote('Called from TYPO3 configuration (route target, TCA callback, TypoScript userFunc, DataHandler hook, or a Services.yaml tag or factory)');
         }
 
+        // Fluid resolves {record.title} through getTitle(), isTitle() or hasTitle(), matching the name case-insensitively.
+        if ($this->markFluidAccess && $method->isPublic() && 1 === preg_match('/^(?:get|is|has)(.+)$/i', $method->getName(), $match)
+            && isset($this->fluidGetterNames()[strtolower($match[1])])
+        ) {
+            return VirtualUsageData::withNote('Read in a Fluid template');
+        }
+
         return null;
+    }
+
+    protected function shouldMarkPropertyAsRead(ReflectionProperty $property): ?VirtualUsageData
+    {
+        if ($this->markFluidAccess && $property->isPublic() && !$property->isStatic() && isset($this->fluidNames()[$property->getName()])) {
+            return VirtualUsageData::withNote('Read in a Fluid template');
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<string, true>
+     */
+    private function fluidNames(): array
+    {
+        if (null !== $this->fluidNames) {
+            return $this->fluidNames;
+        }
+
+        $reader = new FluidTemplateReader();
+        $names = [];
+        foreach ($this->configurationDirectories() as $directory) {
+            // Plain-text FluidEmail templates are .txt.
+            foreach ($this->filesIn(dirname($directory) . '/Resources/Private', ['html', 'txt']) as $file) {
+                foreach ($reader->read($file) as $name) {
+                    $names[$name] = true;
+                }
+            }
+        }
+
+        return $this->fluidNames = $names;
+    }
+
+    /**
+     * @return array<string, true>
+     */
+    private function fluidGetterNames(): array
+    {
+        return $this->fluidGetterNames ??= array_change_key_case($this->fluidNames());
     }
 
     /**
@@ -126,17 +181,27 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
                 }
             }
 
-            if (!is_dir($directory)) {
-                continue;
-            }
+            $files = [...$files, ...$this->filesIn($directory, ['php', 'typoscript', 'yaml'])];
+        }
 
-            $iterator = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
-            );
-            foreach ($iterator as $file) {
-                if (in_array($file->getExtension(), ['php', 'typoscript', 'yaml'], true)) {
-                    $files[] = $file->getPathname();
-                }
+        return $files;
+    }
+
+    /**
+     * @param list<string> $extensions
+     * @return list<string>
+     */
+    private function filesIn(string $directory, array $extensions): array
+    {
+        if (!is_dir($directory)) {
+            return [];
+        }
+
+        $files = [];
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS));
+        foreach ($iterator as $file) {
+            if (in_array($file->getExtension(), $extensions, true)) {
+                $files[] = $file->getPathname();
             }
         }
 
