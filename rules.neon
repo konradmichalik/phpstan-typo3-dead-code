@@ -2,12 +2,14 @@ parametersSchema:
 	typo3DeadCode: structure([
 		configurationDirectory: schema(string(), nullable())
 		markConstructors: bool()
+		markEventApi: bool()
 	])
 
 parameters:
 	typo3DeadCode:
 		configurationDirectory: null
 		markConstructors: true
+		markEventApi: false
 
 services:
 	-
@@ -17,5 +19,11 @@ services:
 			currentWorkingDirectory: %currentWorkingDirectory%
 			configurationDirectory: %typo3DeadCode.configurationDirectory%
 			markConstructors: %typo3DeadCode.markConstructors%
+		tags:
+			- shipmonk.deadCode.memberUsageProvider
+	-
+		class: KonradMichalik\PhpStanTypo3DeadCode\EventApiProvider
+		arguments:
+			enabled: %typo3DeadCode.markEventApi%
 		tags:
 			- shipmonk.deadCode.memberUsageProvider

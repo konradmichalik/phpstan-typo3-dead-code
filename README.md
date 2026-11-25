@@ -114,12 +114,14 @@ parameters:
   typo3DeadCode:
     configurationDirectory: %currentWorkingDirectory%/../../Configuration
     markConstructors: true
+    markEventApi: false
 ```
 
 | Option | Default | Effect |
 |--------|---------|--------|
 | `configurationDirectory` | none | Directory scanned for PHP and TypoScript files. `ext_localconf.php` and `ext_tables.php` next to it are read as well. Without it, the analysed path named `Configuration` is used, or `Configuration/` in the working directory if there is none |
 | `markConstructors` | `true` | Treats every constructor, public `inject*` method and public `initializeObject` as used. Set `false` to let the detector report them, which is often wrong without a container that creates every class |
+| `markEventApi` | `false` | Treats the public methods and properties of an event as used wherever it is passed to `EventDispatcherInterface::dispatch()`, because listeners in other packages read them and write public properties that are not readonly. Dispatched through an interface or base class, the implementations and overrides of its members count too. This also hides getters nobody reads, so it is off by default. Members that only a subclass declares and objects returned by the getters are not covered |
 
 ## 🧑‍💻 Development
 

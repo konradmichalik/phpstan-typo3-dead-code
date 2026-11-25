@@ -8,16 +8,34 @@ use PHPUnit\Framework\TestCase;
 
 final class DeadCodeDetectorTest extends TestCase
 {
+    private const EVENT_API = [
+        'Property Fixture\Project\ExampleEvent::$items is never read',
+        'Property Fixture\Project\ExampleEvent::$items is never written',
+        'Property Fixture\Project\ExampleEvent::$payload is never read',
+        'Unused Fixture\Project\ConcreteNamedEvent::getName',
+        'Unused Fixture\Project\ExampleEvent::getValue',
+        'Unused Fixture\Project\NamedEvent::getName',
+        'Unused Fixture\Project\NullsafeEvent::getValue',
+    ];
+
     private const DEAD = [
+        'Property Fixture\Project\ExampleEvent::$items is never read',
+        'Property Fixture\Project\ExampleEvent::$items is never written',
+        'Property Fixture\Project\ExampleEvent::$payload is never read',
         'Unused Fixture\Other\ExampleController::list',
         'Unused Fixture\Project\BlogController::renderTeaser',
+        'Unused Fixture\Project\ConcreteNamedEvent::getName',
         'Unused Fixture\Project\ContextUtility::commentedOut',
         'Unused Fixture\Project\ContextUtility::deadUtility',
         'Unused Fixture\Project\DataHandlerHook::notAHook',
         'Unused Fixture\Project\ExampleController::neverCalled',
         'Unused Fixture\Project\ExampleController::notExtbaseAction',
+        'Unused Fixture\Project\ExampleEvent::getValue',
         'Unused Fixture\Project\ExampleRepository::injectHidden',
+        'Unused Fixture\Project\NamedEvent::getName',
+        'Unused Fixture\Project\NullsafeEvent::getValue',
         'Unused Fixture\Project\ServiceListener::notListening',
+        'Unused Fixture\Project\UndispatchedEvent::getValue',
     ];
 
     public function testOnlyGenuinelyDeadMembersAreReported(): void
@@ -33,6 +51,11 @@ final class DeadCodeDetectorTest extends TestCase
     public function testFallsBackToTheConfigurationDirectoryOfTheWorkingDirectory(): void
     {
         self::assertSame(self::DEAD, $this->analyse('phpstan.fallback.neon', dirname(__DIR__) . '/Fixtures/Project'));
+    }
+
+    public function testPublicMembersOfDispatchedEventsAreUsedWhenEnabled(): void
+    {
+        self::assertSame(array_values(array_diff(self::DEAD, self::EVENT_API)), $this->analyse('phpstan.events.neon'));
     }
 
     public function testContainerCallsAreReportedWhenConstructorsAreNotMarked(): void
