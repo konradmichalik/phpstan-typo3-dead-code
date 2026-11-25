@@ -48,7 +48,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
         }
 
         if (isset($this->entrypoints()[self::key($method->getDeclaringClass()->getName(), $method->getName())])) {
-            return VirtualUsageData::withNote('Called from TYPO3 configuration (route target, TCA callback, TypoScript userFunc or DataHandler hook)');
+            return VirtualUsageData::withNote('Called from TYPO3 configuration (route target, TCA callback, TypoScript userFunc, DataHandler hook, or a Services.yaml tag or factory)');
         }
 
         return null;
@@ -65,10 +65,15 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
 
         $php = new PhpConfigurationReader();
         $typoScript = new TypoScriptUserFuncReader();
+        $services = new ServicesYamlReader();
 
         $entrypoints = [];
         foreach ($this->files() as $file) {
-            $targets = str_ends_with($file, '.typoscript') ? $typoScript->read($file) : $php->read($file);
+            $targets = match (true) {
+                str_ends_with($file, '.typoscript') => $typoScript->read($file),
+                str_ends_with($file, '.yaml') => $services->read($file),
+                default => $php->read($file),
+            };
             foreach ($targets as [$class, $method]) {
                 $entrypoints[self::key($this->declaringClass($class, $method), $method)] = true;
             }
@@ -129,9 +134,8 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
                 new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
             );
             foreach ($iterator as $file) {
-                $path = $file->getPathname();
-                if (str_ends_with($path, '.php') || str_ends_with($path, '.typoscript')) {
-                    $files[] = $path;
+                if (in_array($file->getExtension(), ['php', 'typoscript', 'yaml'], true)) {
+                    $files[] = $file->getPathname();
                 }
             }
         }

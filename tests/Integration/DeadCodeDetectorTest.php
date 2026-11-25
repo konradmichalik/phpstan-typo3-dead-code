@@ -17,6 +17,7 @@ final class DeadCodeDetectorTest extends TestCase
         'Unused Fixture\Project\ExampleController::neverCalled',
         'Unused Fixture\Project\ExampleController::notExtbaseAction',
         'Unused Fixture\Project\ExampleRepository::injectHidden',
+        'Unused Fixture\Project\ServiceListener::notListening',
     ];
 
     public function testOnlyGenuinelyDeadMembersAreReported(): void

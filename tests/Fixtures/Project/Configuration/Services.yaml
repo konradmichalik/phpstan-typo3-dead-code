@@ -1,0 +1,30 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Fixture\Project\:
+    resource: '../Classes/*'
+
+  Fixture\Project\ServiceListener:
+    tags:
+      - name: event.listener
+        identifier: 'fixture/listener'
+        method: 'onEvent'
+      - event.listener: { identifier: 'fixture/short', method: 'onShortEvent' }
+    arguments:
+      $handlers: !tagged_iterator fixture.handler
+
+  Fixture\Project\CreatedService:
+    factory: ['@Fixture\Project\ServiceFactory', 'create']
+
+  cache.fixture:
+    class: TYPO3\CMS\Core\Cache\Frontend\FrontendInterface
+    factory: ['Fixture\Project\ServiceFactory', 'createStatic']
+
+  fixture.factory:
+    class: Fixture\Project\ServiceFactory
+
+  Fixture\Project\NamedCreated:
+    factory: ['@fixture.factory', 'createNamed']
