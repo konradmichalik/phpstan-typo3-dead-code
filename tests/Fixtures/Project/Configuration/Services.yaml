@@ -28,3 +28,7 @@ services:
 
   Fixture\Project\NamedCreated:
     factory: ['@fixture.factory', 'createNamed']
+
+  Fixture\Project\ExampleRepository: ~
+
+  fixture.listener.alias: '@Fixture\Project\ServiceListener'

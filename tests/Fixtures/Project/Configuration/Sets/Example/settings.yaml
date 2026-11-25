@@ -1,0 +1,4 @@
+# The target string guards Expectations::DEAD: YAML outside a services section must not count as an entry point.
+fixture:
+  showTitle: true
+  target: 'Fixture\Project\ContextUtility->deadUtility'

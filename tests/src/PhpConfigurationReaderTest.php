@@ -49,6 +49,8 @@ final class PhpConfigurationReaderTest extends TestCase
         self::assertContains(['Fixture\Project\DataHandlerHook', 'processDatamap_afterDatabaseOperations'], $targets);
         self::assertContains(['Fixture\Project\DataHandlerHook', 'processCmdmap_postProcess'], $targets);
         self::assertNotContains(['Fixture\Project\DataHandlerHook', 'notAHook'], $targets);
+        // ContextUtility is registered under a non-hook key and under another hook path.
+        self::assertNotContains('Fixture\Project\ContextUtility', array_column($targets, 0));
     }
 
     public function testSkipsFilesThatCannotBeParsed(): void

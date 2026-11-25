@@ -31,6 +31,11 @@ final class ServicesYamlReaderTest extends TestCase
         ], $targets);
     }
 
+    public function testReadsNothingFromYamlWithoutServices(): void
+    {
+        self::assertSame([], (new ServicesYamlReader())->read(__DIR__.'/../Fixtures/Project/Configuration/Sets/Example/settings.yaml'));
+    }
+
     public function testSkipsFilesThatCannotBeParsed(): void
     {
         $file = tempnam(sys_get_temp_dir(), 'dead-code');
