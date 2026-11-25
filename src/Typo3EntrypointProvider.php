@@ -37,6 +37,11 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
             return VirtualUsageData::withNote('Instantiated by the TYPO3 dependency injection container');
         }
 
+        // Same rule as TYPO3's AutowireInjectMethodsPass, which adds these calls to every autowired service.
+        if ($method->isPublic() && (str_starts_with($method->getName(), 'inject') || 'initializeObject' === $method->getName())) {
+            return VirtualUsageData::withNote('Called by the TYPO3 dependency injection container');
+        }
+
         // Extbase resolves the action method from the request, so neither the call nor the action name is in PHP code.
         if (str_ends_with($method->getName(), 'Action')
             && is_a($method->getDeclaringClass()->getName(), 'TYPO3\CMS\Extbase\Mvc\Controller\ActionController', true)

@@ -82,6 +82,7 @@ With both in place the result matched a run from the project root on four extens
 | `Configuration/**/*.typoscript` | `userFunc = Vendor\Foo->bar`, comment lines excluded |
 | `ext_localconf.php`, `ext_tables.php` | The same targets as in `Configuration/**/*.php`, such as `'clearCachePostProc'][] = Foo::class . '->bar'`, and DataHandler hook classes registered as `processDatamapClass`, `processCmdmapClass`, `moveRecordClass` or `checkModifyAccessList`, whose hook methods such as `processDatamap_afterDatabaseOperations` count as used |
 | Any class | `__construct`, because the container instantiates it |
+| Any class | Public `inject*` methods and a public `initializeObject`, which the container calls on autowired services |
 | Extbase controllers | Every `*Action` method, `initialize*Action` included, of a class extending `ActionController` |
 
 ```php
