@@ -3,6 +3,7 @@
 	"description": "TYPO3 entry points for shipmonk/dead-code-detector: DI constructors, route targets and TypoScript userFunc",
 	"license": "GPL-3.0-or-later",
 	"type": "phpstan-extension",
+	"version": "0.2.0",
 	"keywords": [
 		"php",
 		"phpstan",
