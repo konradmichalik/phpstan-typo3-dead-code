@@ -115,8 +115,9 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
         $files = [];
         foreach ($this->configurationDirectories() as $directory) {
             foreach (['ext_localconf.php', 'ext_tables.php'] as $name) {
-                if (is_file(dirname($directory) . '/' . $name)) {
-                    $files[] = dirname($directory) . '/' . $name;
+                $path = dirname($directory) . '/' . $name;
+                if (is_file($path)) {
+                    $files[] = $path;
                 }
             }
 
