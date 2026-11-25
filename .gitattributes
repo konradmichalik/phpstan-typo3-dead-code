@@ -7,6 +7,7 @@
 /.php-cs-fixer.php        export-ignore
 /composer-require-checker.json export-ignore
 /composer-unused.php      export-ignore
+/icon.png                 export-ignore
 /phpstan.neon             export-ignore
 /phpunit.xml.dist         export-ignore
 /rector.php               export-ignore

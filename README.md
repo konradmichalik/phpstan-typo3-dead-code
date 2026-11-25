@@ -1,5 +1,7 @@
 <div align="center">
 
+![icon](icon.png)
+
 # PHPStan TYPO3 dead code
 
 [![Coverage](https://img.shields.io/coverallsCoverage/github/konradmichalik/phpstan-typo3-dead-code?logo=coveralls)](https://coveralls.io/github/konradmichalik/phpstan-typo3-dead-code)
