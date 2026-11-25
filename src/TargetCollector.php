@@ -2,18 +2,24 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the "phpstan-typo3-dead-code" Composer package.
+ *
+ * (c) Konrad Michalik <hej@konradmichalik.dev>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace KonradMichalik\PhpStanTypo3DeadCode;
 
-use PhpParser\Node;
-use PhpParser\Node\ArrayItem;
-use PhpParser\Node\Expr\ArrayDimFetch;
-use PhpParser\Node\Expr\Assign;
+use PhpParser\Node\{ArrayItem, Identifier, Name};
+use PhpParser\Node\Expr\{ArrayDimFetch, Assign, ClassConstFetch};
 use PhpParser\Node\Expr\BinaryOp\Concat;
-use PhpParser\Node\Expr\ClassConstFetch;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\String_;
-use PhpParser\NodeVisitorAbstract;
+use PhpParser\{Node, NodeVisitorAbstract};
+
+use function in_array;
 
 /**
  * Collects `Foo::class . '::bar'`, `Foo::class . '->bar'`, `'Vendor\Foo::bar'`, `'Vendor\Foo->bar'`,

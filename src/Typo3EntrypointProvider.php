@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the "phpstan-typo3-dead-code" Composer package.
+ *
+ * (c) Konrad Michalik <hej@konradmichalik.dev>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace KonradMichalik\PhpStanTypo3DeadCode;
 
 use FilesystemIterator;
@@ -10,8 +19,11 @@ use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use ReflectionMethod;
 use ReflectionProperty;
-use ShipMonk\PHPStan\DeadCode\Provider\ReflectionBasedMemberUsageProvider;
-use ShipMonk\PHPStan\DeadCode\Provider\VirtualUsageData;
+use ShipMonk\PHPStan\DeadCode\Provider\{ReflectionBasedMemberUsageProvider, VirtualUsageData};
+use SplFileInfo;
+
+use function dirname;
+use function in_array;
 
 /**
  * Marks methods as used that TYPO3 calls from configuration instead of PHP code.
@@ -91,7 +103,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
         $names = [];
         foreach ($this->configurationDirectories() as $directory) {
             // Plain-text FluidEmail templates are .txt.
-            foreach ($this->filesIn(dirname($directory) . '/Resources/Private', ['html', 'txt']) as $file) {
+            foreach ($this->filesIn(dirname($directory).'/Resources/Private', ['html', 'txt']) as $file) {
                 foreach ($reader->read($file) as $name) {
                     $names[$name] = true;
                 }
@@ -140,7 +152,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
     // PHP resolves class and method names case-insensitively, so configuration may spell them differently.
     private static function key(string $class, string $method): string
     {
-        return strtolower($class . '::' . $method);
+        return strtolower($class.'::'.$method);
     }
 
     // Static reflection, because runtime autoloading fails when Extbase is only known through scanDirectories.
@@ -175,7 +187,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
         $files = [];
         foreach ($this->configurationDirectories() as $directory) {
             foreach (['ext_localconf.php', 'ext_tables.php'] as $name) {
-                $path = dirname($directory) . '/' . $name;
+                $path = dirname($directory).'/'.$name;
                 if (is_file($path)) {
                     $files[] = $path;
                 }
@@ -189,6 +201,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
 
     /**
      * @param list<string> $extensions
+     *
      * @return list<string>
      */
     private function filesIn(string $directory, array $extensions): array
@@ -200,7 +213,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
         $files = [];
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS));
         foreach ($iterator as $file) {
-            if (in_array($file->getExtension(), $extensions, true)) {
+            if ($file instanceof SplFileInfo && in_array($file->getExtension(), $extensions, true)) {
                 $files[] = $file->getPathname();
             }
         }
@@ -224,6 +237,6 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
             static fn (string $path): bool => 'Configuration' === basename($path) && is_dir($path),
         ));
 
-        return [] !== $analysed ? $analysed : [$this->currentWorkingDirectory . '/Configuration'];
+        return [] !== $analysed ? $analysed : [$this->currentWorkingDirectory.'/Configuration'];
     }
 }

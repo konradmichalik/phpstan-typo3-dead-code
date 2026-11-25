@@ -2,9 +2,21 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the "phpstan-typo3-dead-code" Composer package.
+ *
+ * (c) Konrad Michalik <hej@konradmichalik.dev>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace KonradMichalik\PhpStanTypo3DeadCode\Tests\Integration;
 
 use PHPUnit\Framework\TestCase;
+
+use function dirname;
+use function sprintf;
 
 final class DeadCodeDetectorTest extends TestCase
 {
@@ -73,7 +85,7 @@ final class DeadCodeDetectorTest extends TestCase
 
     public function testFallsBackToTheConfigurationDirectoryOfTheWorkingDirectory(): void
     {
-        self::assertSame(self::DEAD, $this->analyse('phpstan.fallback.neon', dirname(__DIR__) . '/Fixtures/Project'));
+        self::assertSame(self::DEAD, $this->analyse('phpstan.fallback.neon', dirname(__DIR__).'/Fixtures/Project'));
     }
 
     public function testPublicMembersOfDispatchedEventsAreUsedWhenEnabled(): void
@@ -104,10 +116,10 @@ final class DeadCodeDetectorTest extends TestCase
         $command = sprintf(
             'cd %s && %s %s analyse -c %s --autoload-file=%s --no-progress --error-format=raw --memory-limit=1G 2>&1',
             escapeshellarg($workingDirectory ?? $root),
-            escapeshellarg(PHP_BINARY),
-            escapeshellarg($root . '/vendor/bin/phpstan'),
-            escapeshellarg(__DIR__ . '/' . $configuration),
-            escapeshellarg($root . '/vendor/autoload.php'),
+            escapeshellarg(\PHP_BINARY),
+            escapeshellarg($root.'/vendor/bin/phpstan'),
+            escapeshellarg(__DIR__.'/'.$configuration),
+            escapeshellarg($root.'/vendor/autoload.php'),
         );
 
         // PHPStan may print a preamble before the report, so only lines shaped like "file:line:message" count.

@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the "phpstan-typo3-dead-code" Composer package.
+ *
+ * (c) Konrad Michalik <hej@konradmichalik.dev>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace KonradMichalik\PhpStanTypo3DeadCode\Tests\Unit;
 
 use KonradMichalik\PhpStanTypo3DeadCode\PhpConfigurationReader;
@@ -11,7 +20,7 @@ final class PhpConfigurationReaderTest extends TestCase
 {
     public function testReadsRouteTargetsAsFullyQualifiedNames(): void
     {
-        $targets = (new PhpConfigurationReader())->read(__DIR__ . '/../Fixtures/Project/Configuration/Backend/AjaxRoutes.php');
+        $targets = (new PhpConfigurationReader())->read(__DIR__.'/../Fixtures/Project/Configuration/Backend/AjaxRoutes.php');
 
         self::assertSame([
             ['Fixture\Project\ExampleController', 'list'],
@@ -25,7 +34,7 @@ final class PhpConfigurationReaderTest extends TestCase
 
     public function testReadsArrowCallbacksFromTca(): void
     {
-        $targets = (new PhpConfigurationReader())->read(__DIR__ . '/../Fixtures/Project/Configuration/TCA/tx_example.php');
+        $targets = (new PhpConfigurationReader())->read(__DIR__.'/../Fixtures/Project/Configuration/TCA/tx_example.php');
 
         self::assertSame([
             ['Fixture\Project\ContextUtility', 'itemsProc'],
@@ -35,7 +44,7 @@ final class PhpConfigurationReaderTest extends TestCase
 
     public function testReadsDataHandlerHookClassesAsTheirHookMethods(): void
     {
-        $targets = (new PhpConfigurationReader())->read(__DIR__ . '/../Fixtures/Project/ext_localconf.php');
+        $targets = (new PhpConfigurationReader())->read(__DIR__.'/../Fixtures/Project/ext_localconf.php');
 
         self::assertContains(['Fixture\Project\DataHandlerHook', 'processDatamap_afterDatabaseOperations'], $targets);
         self::assertContains(['Fixture\Project\DataHandlerHook', 'processCmdmap_postProcess'], $targets);

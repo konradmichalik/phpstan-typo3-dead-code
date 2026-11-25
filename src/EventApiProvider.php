@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the "phpstan-typo3-dead-code" Composer package.
+ *
+ * (c) Konrad Michalik <hej@konradmichalik.dev>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace KonradMichalik\PhpStanTypo3DeadCode;
 
 use PhpParser\Node;
@@ -13,21 +22,17 @@ use PHPStan\Type\ObjectType;
 use ReflectionMethod;
 use ReflectionProperty;
 use ShipMonk\PHPStan\DeadCode\Enum\AccessType;
-use ShipMonk\PHPStan\DeadCode\Graph\ClassMethodRef;
-use ShipMonk\PHPStan\DeadCode\Graph\ClassMethodUsage;
-use ShipMonk\PHPStan\DeadCode\Graph\ClassPropertyRef;
-use ShipMonk\PHPStan\DeadCode\Graph\ClassPropertyUsage;
-use ShipMonk\PHPStan\DeadCode\Graph\UsageOrigin;
+use ShipMonk\PHPStan\DeadCode\Graph\{ClassMethodRef, ClassMethodUsage, ClassPropertyRef, ClassPropertyUsage, UsageOrigin};
 use ShipMonk\PHPStan\DeadCode\Provider\MemberUsageProvider;
 
 /**
  * Marks the public members of a PSR-14 event as used where it is dispatched, because listeners in other packages read them.
  */
-final class EventApiProvider implements MemberUsageProvider
+final readonly class EventApiProvider implements MemberUsageProvider
 {
     public function __construct(
-        private readonly ReflectionProvider $reflectionProvider,
-        private readonly bool $enabled,
+        private ReflectionProvider $reflectionProvider,
+        private bool $enabled,
     ) {}
 
     public function getUsages(Node $node, Scope $scope): array
