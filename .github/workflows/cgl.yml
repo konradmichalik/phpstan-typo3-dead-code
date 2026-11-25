@@ -1,10 +1,8 @@
 name: CGL
-
 on:
   push:
-    branches:
-      - main
-  pull_request:
+    branches: [main, 'renovate/**']
+  pull_request: ~
 
 permissions:
   contents: read

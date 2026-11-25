@@ -3,6 +3,14 @@
 	"description": "TYPO3 entry points for shipmonk/dead-code-detector: DI constructors, route targets and TypoScript userFunc",
 	"license": "GPL-3.0-or-later",
 	"type": "phpstan-extension",
+	"keywords": [
+		"php",
+		"phpstan",
+		"phpstan-extension",
+		"typo3",
+		"dead-code",
+		"static-analysis"
+	],
 	"authors": [
 		{
 			"name": "Konrad Michalik",
@@ -68,7 +76,7 @@
 			"@lint:php"
 		],
 		"lint:composer": "@fix:composer --dry-run",
-		"lint:editorconfig": "ec --git-only",
+		"lint:editorconfig": "ec",
 		"lint:php": "@fix:php --dry-run",
 		"migration": [
 			"@migration:rector"
