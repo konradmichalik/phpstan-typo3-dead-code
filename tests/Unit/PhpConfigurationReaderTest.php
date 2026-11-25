@@ -19,6 +19,7 @@ final class PhpConfigurationReaderTest extends TestCase
             ['Fixture\Project\ExampleController', 'byString'],
             ['Fixture\Project\ChildController', 'inherited'],
             ['Fixture\Project\TraitController', 'fromTrait'],
+            ['fixture\project\examplecontroller', 'CASEINSENSITIVE'],
         ], $targets);
     }
 

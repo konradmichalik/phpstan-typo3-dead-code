@@ -17,7 +17,7 @@ use ShipMonk\PHPStan\DeadCode\Provider\VirtualUsageData;
  */
 final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
 {
-    /** @var array<string, true>|null "DeclaringClass::method" */
+    /** @var array<string, true>|null "declaringclass::method", lowercase */
     private ?array $entrypoints = null;
 
     /**
@@ -37,7 +37,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
             return VirtualUsageData::withNote('Instantiated by the TYPO3 dependency injection container');
         }
 
-        if (isset($this->entrypoints()[$method->getDeclaringClass()->getName() . '::' . $method->getName()])) {
+        if (isset($this->entrypoints()[self::key($method->getDeclaringClass()->getName(), $method->getName())])) {
             return VirtualUsageData::withNote('Called from TYPO3 configuration (route target, TCA callback or TypoScript userFunc)');
         }
 
@@ -60,11 +60,17 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
         foreach ($this->files() as $file) {
             $targets = str_ends_with($file, '.typoscript') ? $typoScript->read($file) : $php->read($file);
             foreach ($targets as [$class, $method]) {
-                $entrypoints[$this->declaringClass($class, $method) . '::' . $method] = true;
+                $entrypoints[self::key($this->declaringClass($class, $method), $method)] = true;
             }
         }
 
         return $this->entrypoints = $entrypoints;
+    }
+
+    // PHP resolves class and method names case-insensitively, so configuration may spell them differently.
+    private static function key(string $class, string $method): string
+    {
+        return strtolower($class . '::' . $method);
     }
 
     // A route may name a child class while the method lives in its parent or a trait.

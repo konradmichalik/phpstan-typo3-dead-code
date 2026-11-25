@@ -13,5 +13,7 @@ final class ExampleController
         return $this->dependency;
     }
 
+    public function caseInsensitive(): void {}
+
     public function neverCalled(): void {}
 }

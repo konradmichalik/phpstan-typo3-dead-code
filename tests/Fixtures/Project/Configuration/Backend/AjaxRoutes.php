@@ -28,4 +28,8 @@ return [
         'path' => '/example/trait',
         'target' => TraitController::class . '::fromTrait',
     ],
+    'example_case' => [
+        'path' => '/example/case',
+        'target' => 'fixture\project\examplecontroller::CASEINSENSITIVE',
+    ],
 ];
