@@ -6,6 +6,9 @@ parametersSchema:
 		markFluidAccess: bool()
 	])
 
+expandRelativePaths:
+	- '[parameters][typo3DeadCode][configurationDirectory]'
+
 parameters:
 	typo3DeadCode:
 		configurationDirectory: null
