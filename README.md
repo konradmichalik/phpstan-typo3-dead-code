@@ -9,6 +9,9 @@
 
 TYPO3 entry points for [`shipmonk/dead-code-detector`](https://github.com/shipmonk-rnd/dead-code-detector). The detector has no TYPO3 support, so it reports everything TYPO3 calls from configuration instead of PHP code. A route target such as `FacetsModalController::configuration` is only named in `Configuration/Backend/AjaxRoutes.php`, and the detector reports it as unused.
 
+> [!WARNING]
+> The 0.x versions are still in development. Options and behaviour may change between minor versions.
+
 ## 🔥 Installation
 
 ### Requirements
@@ -16,7 +19,7 @@ TYPO3 entry points for [`shipmonk/dead-code-detector`](https://github.com/shipmo
 - PHP 8.2 to 8.6
 - PHPStan 2.1.41 or newer
 - [`shipmonk/dead-code-detector`](https://github.com/shipmonk-rnd/dead-code-detector) 1.4, installed as a dependency
-- `typo3/class-alias-loader` 1.2.1 or newer, if the project uses it. Older versions unregister the Composer class loader, so the detector no longer sees which classes come from `vendor/` and reports every override of a TYPO3 or PSR method, such as `MiddlewareInterface::process`. The package declares a conflict, `composer update typo3/class-alias-loader` resolves it
+- `typo3/class-alias-loader` 1.2.1 or newer, if installed. Older versions hide `vendor/` from the detector, which then reports every override of a TYPO3 method as unused
 
 ### Composer
 
