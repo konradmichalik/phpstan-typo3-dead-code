@@ -1,0 +1,23 @@
+{
+	"symbol-whitelist": [
+		"PHPStan\\Analyser\\Scope",
+		"PHPStan\\Reflection\\ReflectionProvider",
+		"PHPStan\\Type\\ObjectType",
+		"PhpParser\\Error",
+		"PhpParser\\Node",
+		"PhpParser\\Node\\ArrayItem",
+		"PhpParser\\Node\\Expr\\ArrayDimFetch",
+		"PhpParser\\Node\\Expr\\Assign",
+		"PhpParser\\Node\\Expr\\BinaryOp\\Concat",
+		"PhpParser\\Node\\Expr\\ClassConstFetch",
+		"PhpParser\\Node\\Expr\\MethodCall",
+		"PhpParser\\Node\\Identifier",
+		"PhpParser\\Node\\Name",
+		"PhpParser\\Node\\Scalar\\String_",
+		"PhpParser\\NodeTraverser",
+		"PhpParser\\NodeVisitor\\NameResolver",
+		"PhpParser\\NodeVisitorAbstract",
+		"PhpParser\\Parser",
+		"PhpParser\\ParserFactory"
+	]
+}

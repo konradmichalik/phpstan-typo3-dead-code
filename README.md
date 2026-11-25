@@ -2,6 +2,8 @@
 
 # PHPStan TYPO3 dead code
 
+[![Coverage](https://img.shields.io/coverallsCoverage/github/konradmichalik/phpstan-typo3-dead-code?logo=coveralls)](https://coveralls.io/github/konradmichalik/phpstan-typo3-dead-code)
+[![CGL](https://img.shields.io/github/actions/workflow/status/konradmichalik/phpstan-typo3-dead-code/cgl.yml?label=cgl&logo=github)](https://github.com/konradmichalik/phpstan-typo3-dead-code/actions/workflows/cgl.yml)
 [![Tests](https://img.shields.io/github/actions/workflow/status/konradmichalik/phpstan-typo3-dead-code/tests.yml?label=tests&logo=github)](https://github.com/konradmichalik/phpstan-typo3-dead-code/actions/workflows/tests.yml)
 [![Supported PHP Versions](https://img.shields.io/packagist/dependency-v/konradmichalik/phpstan-typo3-dead-code/php?logo=php)](https://packagist.org/packages/konradmichalik/phpstan-typo3-dead-code)
 
@@ -141,8 +143,11 @@ parameters:
 `composer test` runs PHPUnit, including an end to end run of PHPStan with the detector on `tests/Fixtures`.
 
 ```bash
-composer test   # PHPUnit
-composer lint   # composer normalize (dry run) and editorconfig check
+composer test                # PHPUnit
+composer test:coverage       # PHPUnit with a clover report in .build/coverage
+composer lint                # composer normalize, editorconfig and PHP-CS-Fixer (dry run)
+composer sca                 # PHPStan
+composer migration           # Rector
 composer fix
 ```
 

@@ -1,0 +1,10 @@
+includes:
+	- vendor/phpstan/phpstan-phpunit/extension.neon
+
+parameters:
+	level: max
+	paths:
+		- src
+		- tests/Integration
+		- tests/Unit
+	tmpDir: .build/phpstan.cache

@@ -19,7 +19,10 @@
 	"require-dev": {
 		"armin/editorconfig-cli": "^2.0",
 		"ergebnis/composer-normalize": "^2.44",
-		"phpunit/phpunit": "^11.5 || ^12.0"
+		"konradmichalik/php-cs-fixer-preset": "^0.4.0",
+		"phpstan/phpstan-phpunit": "^2.1",
+		"phpunit/phpunit": "^11.5 || ^12.0",
+		"rector/rector": "^2.9"
 	},
 	"conflict": {
 		"typo3/class-alias-loader": "<1.2.1"
@@ -53,16 +56,29 @@
 	"scripts": {
 		"fix": [
 			"@fix:composer",
-			"@fix:editorconfig"
+			"@fix:editorconfig",
+			"@fix:php"
 		],
 		"fix:composer": "@composer normalize",
 		"fix:editorconfig": "@lint:editorconfig --fix",
+		"fix:php": "php-cs-fixer fix",
 		"lint": [
 			"@lint:composer",
-			"@lint:editorconfig"
+			"@lint:editorconfig",
+			"@lint:php"
 		],
 		"lint:composer": "@fix:composer --dry-run",
 		"lint:editorconfig": "ec --git-only",
-		"test": "phpunit"
+		"lint:php": "@fix:php --dry-run",
+		"migration": [
+			"@migration:rector"
+		],
+		"migration:rector": "rector process -c rector.php",
+		"sca": [
+			"@sca:php"
+		],
+		"sca:php": "phpstan analyse --memory-limit=2G",
+		"test": "@test:coverage --no-coverage",
+		"test:coverage": "XDEBUG_MODE=coverage phpunit"
 	}
 }
