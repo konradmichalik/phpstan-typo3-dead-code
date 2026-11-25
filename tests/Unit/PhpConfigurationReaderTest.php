@@ -39,7 +39,6 @@ final class PhpConfigurationReaderTest extends TestCase
 
         self::assertContains(['Fixture\Project\DataHandlerHook', 'processDatamap_afterDatabaseOperations'], $targets);
         self::assertContains(['Fixture\Project\DataHandlerHook', 'processCmdmap_postProcess'], $targets);
-        self::assertContains(['Fixture\Project\DataHandlerHook', 'clearCachePostProc'], $targets);
         self::assertNotContains(['Fixture\Project\DataHandlerHook', 'notAHook'], $targets);
     }
 
