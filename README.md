@@ -82,7 +82,7 @@ With both in place the result matched a run from the project root on four extens
 | `Configuration/**/*.typoscript` | `userFunc = Vendor\Foo->bar`, comment lines excluded |
 | `ext_localconf.php`, `ext_tables.php` | The same targets as in `Configuration/**/*.php`, such as `'clearCachePostProc'][] = Foo::class . '->bar'`, and DataHandler hook classes registered as `processDatamapClass`, `processCmdmapClass`, `moveRecordClass` or `checkModifyAccessList`, whose hook methods such as `processDatamap_afterDatabaseOperations` count as used |
 | Any class | `__construct`, because the container instantiates it |
-| Any class | Public `inject*` methods and a public `initializeObject`, which the container calls on autowired services |
+| Any class | Public `inject*` methods and a public `initializeObject`, which the container calls on autowired services. Both rows follow `markConstructors` |
 | Extbase controllers | Every `*Action` method, `initialize*Action` included, of a class extending `ActionController` |
 
 ```php
@@ -118,7 +118,7 @@ parameters:
 | Option | Default | Effect |
 |--------|---------|--------|
 | `configurationDirectory` | none | Directory scanned for PHP and TypoScript files. `ext_localconf.php` and `ext_tables.php` next to it are read as well. Without it, the analysed path named `Configuration` is used, or `Configuration/` in the working directory if there is none |
-| `markConstructors` | `true` | Treats every constructor as used. Set `false` to let the detector report unused constructors, which is often wrong without a container that creates every class |
+| `markConstructors` | `true` | Treats every constructor, public `inject*` method and public `initializeObject` as used. Set `false` to let the detector report them, which is often wrong without a container that creates every class |
 
 ## 🧑‍💻 Development
 

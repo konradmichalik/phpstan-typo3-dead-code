@@ -34,12 +34,13 @@ final class DeadCodeDetectorTest extends TestCase
         self::assertSame(self::DEAD, $this->analyse('phpstan.fallback.neon', dirname(__DIR__) . '/Fixtures/Project'));
     }
 
-    public function testConstructorsAreReportedWhenNotMarked(): void
+    public function testContainerCallsAreReportedWhenConstructorsAreNotMarked(): void
     {
-        self::assertContains(
-            'Unused Fixture\Project\ExampleController::__construct',
-            $this->analyse('phpstan.constructors.neon'),
-        );
+        $messages = $this->analyse('phpstan.constructors.neon');
+
+        self::assertContains('Unused Fixture\Project\ExampleController::__construct', $messages);
+        self::assertContains('Unused Fixture\Project\ExampleRepository::injectConnectionPool', $messages);
+        self::assertContains('Unused Fixture\Project\ExampleRepository::initializeObject', $messages);
     }
 
     /**

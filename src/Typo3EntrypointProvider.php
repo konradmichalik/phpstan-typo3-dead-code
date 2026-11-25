@@ -38,7 +38,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
         }
 
         // Same rule as TYPO3's AutowireInjectMethodsPass, which adds these calls to every autowired service.
-        if ($method->isPublic() && (str_starts_with($method->getName(), 'inject') || 'initializeObject' === $method->getName())) {
+        if ($this->markConstructors && $method->isPublic() && (str_starts_with($method->getName(), 'inject') || 'initializeObject' === $method->getName())) {
             return VirtualUsageData::withNote('Called by the TYPO3 dependency injection container');
         }
 
