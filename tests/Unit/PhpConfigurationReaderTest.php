@@ -33,6 +33,16 @@ final class PhpConfigurationReaderTest extends TestCase
         ], $targets);
     }
 
+    public function testReadsDataHandlerHookClassesAsTheirHookMethods(): void
+    {
+        $targets = (new PhpConfigurationReader())->read(__DIR__ . '/../Fixtures/Project/ext_localconf.php');
+
+        self::assertContains(['Fixture\Project\DataHandlerHook', 'processDatamap_afterDatabaseOperations'], $targets);
+        self::assertContains(['Fixture\Project\DataHandlerHook', 'processCmdmap_postProcess'], $targets);
+        self::assertContains(['Fixture\Project\DataHandlerHook', 'clearCachePostProc'], $targets);
+        self::assertNotContains(['Fixture\Project\DataHandlerHook', 'notAHook'], $targets);
+    }
+
     public function testSkipsFilesThatCannotBeParsed(): void
     {
         $file = tempnam(sys_get_temp_dir(), 'dead-code');

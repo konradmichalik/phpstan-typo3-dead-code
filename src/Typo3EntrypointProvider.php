@@ -38,7 +38,7 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
         }
 
         if (isset($this->entrypoints()[self::key($method->getDeclaringClass()->getName(), $method->getName())])) {
-            return VirtualUsageData::withNote('Called from TYPO3 configuration (route target, TCA callback or TypoScript userFunc)');
+            return VirtualUsageData::withNote('Called from TYPO3 configuration (route target, TCA callback, TypoScript userFunc or DataHandler hook)');
         }
 
         return null;
@@ -94,6 +94,12 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
     {
         $files = [];
         foreach ($this->configurationDirectories() as $directory) {
+            foreach (['ext_localconf.php', 'ext_tables.php'] as $name) {
+                if (is_file(dirname($directory) . '/' . $name)) {
+                    $files[] = dirname($directory) . '/' . $name;
+                }
+            }
+
             if (!is_dir($directory)) {
                 continue;
             }

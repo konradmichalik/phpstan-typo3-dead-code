@@ -12,6 +12,7 @@ final class DeadCodeDetectorTest extends TestCase
         'Unused Fixture\Other\ExampleController::list',
         'Unused Fixture\Project\ContextUtility::commentedOut',
         'Unused Fixture\Project\ContextUtility::deadUtility',
+        'Unused Fixture\Project\DataHandlerHook::notAHook',
         'Unused Fixture\Project\ExampleController::neverCalled',
     ];
 
