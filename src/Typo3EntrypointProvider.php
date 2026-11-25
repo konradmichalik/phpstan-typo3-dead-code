@@ -37,6 +37,13 @@ final class Typo3EntrypointProvider extends ReflectionBasedMemberUsageProvider
             return VirtualUsageData::withNote('Instantiated by the TYPO3 dependency injection container');
         }
 
+        // Extbase resolves the action method from the request, so neither the call nor the action name is in PHP code.
+        if (str_ends_with($method->getName(), 'Action')
+            && is_a($method->getDeclaringClass()->getName(), 'TYPO3\CMS\Extbase\Mvc\Controller\ActionController', true)
+        ) {
+            return VirtualUsageData::withNote('Extbase action, dispatched by the ActionController');
+        }
+
         if (isset($this->entrypoints()[self::key($method->getDeclaringClass()->getName(), $method->getName())])) {
             return VirtualUsageData::withNote('Called from TYPO3 configuration (route target, TCA callback, TypoScript userFunc or DataHandler hook)');
         }

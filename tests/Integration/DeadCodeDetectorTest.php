@@ -10,10 +10,12 @@ final class DeadCodeDetectorTest extends TestCase
 {
     private const DEAD = [
         'Unused Fixture\Other\ExampleController::list',
+        'Unused Fixture\Project\BlogController::renderTeaser',
         'Unused Fixture\Project\ContextUtility::commentedOut',
         'Unused Fixture\Project\ContextUtility::deadUtility',
         'Unused Fixture\Project\DataHandlerHook::notAHook',
         'Unused Fixture\Project\ExampleController::neverCalled',
+        'Unused Fixture\Project\ExampleController::notExtbaseAction',
     ];
 
     public function testOnlyGenuinelyDeadMembersAreReported(): void

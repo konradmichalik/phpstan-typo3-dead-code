@@ -16,4 +16,6 @@ final class ExampleController
     public function caseInsensitive(): void {}
 
     public function neverCalled(): void {}
+
+    public function notExtbaseAction(): void {}
 }
