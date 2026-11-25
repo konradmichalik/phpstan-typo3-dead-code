@@ -16,6 +16,7 @@ TYPO3 entry points for [`shipmonk/dead-code-detector`](https://github.com/shipmo
 - PHP 8.2 to 8.6
 - PHPStan 2.1.41 or newer
 - [`shipmonk/dead-code-detector`](https://github.com/shipmonk-rnd/dead-code-detector) 1.4, installed as a dependency
+- `typo3/class-alias-loader` 1.2.1 or newer, if the project uses it. Older versions unregister the Composer class loader, so the detector no longer sees which classes come from `vendor/` and reports every override of a TYPO3 or PSR method, such as `MiddlewareInterface::process`. The package declares a conflict, `composer update typo3/class-alias-loader` resolves it
 
 ### Composer
 
